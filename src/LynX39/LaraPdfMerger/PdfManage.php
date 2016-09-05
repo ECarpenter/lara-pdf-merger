@@ -28,7 +28,16 @@ class PDFManage
 
             $this->_files[] = array($filepath, $pages, $orientation);
         } else {
-            throw new Exception("Could not locate PDF on '$filepath'");
+            $headers=get_headers($filepath);
+            if (stripos($headers[0],"200 OK") !== false) {
+                if (strtolower($pages) != 'all') {
+                    $pages = $this->_rewritepages($pages);
+                }
+
+                $this->_files[] = array($filepath, $pages, $orientation);
+            } else {
+                throw new Exception("Could not locate PDF on '$filepath'");
+            }
         }
 
         return $this;
